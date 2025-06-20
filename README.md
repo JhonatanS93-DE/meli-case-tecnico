@@ -1,12 +1,12 @@
-# Mercado Libre - Senior Data Engineer Case
+# Mercado Libre - Case Tecnico
 
-## 📝 Descripción del Caso
+## Descripción del Caso
 
 Este proyecto corresponde a la resolución de un ejercicio técnico para la posición de **Senior Data Engineer** en Mercado Libre. El objetivo es construir un pipeline de datos que procese múltiples fuentes, genere un dataset enriquecido para un modelo de machine learning y lo almacene en diferentes formatos y destinos.
 
 ---
 
-## 🚀 Objetivos del Pipeline
+## Objetivos del Pipeline
 
 - Leer fuentes de datos en formato JSONL y CSV (`prints.json`, `taps.json`, `pays.csv`).
 - Filtrar eventos de la última semana.
@@ -23,7 +23,7 @@ Este proyecto corresponde a la resolución de un ejercicio técnico para la posi
 
 ---
 
-## 🛠️ Tecnologías y Herramientas
+## Tecnologías y Herramientas
 
 - **Python 3.10+**
 - **Apache Airflow** (vía Docker Compose)
@@ -33,7 +33,7 @@ Este proyecto corresponde a la resolución de un ejercicio técnico para la posi
 
 ---
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 ├── airflow/
@@ -52,7 +52,7 @@ Este proyecto corresponde a la resolución de un ejercicio técnico para la posi
 
 ---
 
-## ⚙️ Cómo Ejecutar el Proyecto
+## Cómo Ejecutar el Proyecto
 
 1. Clona este repositorio:
 ```bash
@@ -77,7 +77,7 @@ http://localhost:8080
 
 ---
 
-## ✅ Mejoras Futuras
+## Mejoras Futuras
 
 - Tests automatizados con `pytest`.
 - Validaciones de esquema con `Great Expectations`.
@@ -86,7 +86,7 @@ http://localhost:8080
 
 ---
 
-## 🧑‍💻 Autor
+## Autor
 
 **Jhonatan Saldarriaga**  
 [LinkedIn](https://www.linkedin.com/in/jhonatan-saldarriaga/)  

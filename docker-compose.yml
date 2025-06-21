@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   postgres:
     image: postgres:13
@@ -7,31 +5,31 @@ services:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=meli_case
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
 
   airflow:
     build:
       context: .
+      dockerfile: airflow/docker/Dockerfile
     depends_on:
       - postgres
     environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__WEBSERVER__PORT=8080
+      - PYTHONPATH=/opt/airflow
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./pipeline:/opt/airflow/pipeline
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/pipeline:/opt/airflow/pipeline
     ports:
       - "8080:8080"
     command: >
-      bash -c "
-        airflow db migrate &&
-        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
-        airflow webserver
-      "
+      bash -c "airflow db upgrade &&
+               airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email admin@example.com &&
+               airflow webserver"
 
 volumes:
-  pgdata:
+  postgres_data:

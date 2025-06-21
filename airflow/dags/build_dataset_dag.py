@@ -1,10 +1,13 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-from pipeline.load_data import load_all_sources
+from pipeline.load_data import load_all_sources 
 from pipeline.transform_data import generate_features
 from pipeline.data_quality import run_quality_checks
 from pipeline.save_outputs import save_csv, save_parquet, save_to_postgres
+import sys
+import os
+sys.path.append('/opt/airflow')
 
 default_args = {
     'owner': 'Jhonatan Saldarriaga',
@@ -18,7 +21,7 @@ with DAG(
     description='Construcción de dataset enriquecido para ML desde múltiples sources',
     default_args=default_args,
     start_date=datetime(2024, 1, 1),
-    schedule_interval=None,  # Se ejecuta manualmente
+    schedule_interval=None,
     catchup=False,
     tags=["mercado-libre", "ml", "etl", "airflow", "dags"]
 ) as dag:

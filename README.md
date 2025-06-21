@@ -81,8 +81,7 @@ http://localhost:8080
 
 - Tests automatizados con `pytest`.
 - Validaciones de esquema con `Great Expectations`.
-- Parametrización por entorno.
-- Orquestación con DAGs más robustos y modularización por etapa.
+- Aplicar uso de servicios cloud
 
 ---
 

@@ -26,11 +26,10 @@ services:
       - ./pipeline:/opt/airflow/pipeline
     entrypoint: /bin/bash
     command: >
-      -c "
-      airflow db upgrade &&
-      airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
-      airflow scheduler & airflow webserver
-      "
+      bash -c "
+        airflow db migrate &&
+        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin &&
+        airflow webserver"
 
 volumes:
   pgdata:

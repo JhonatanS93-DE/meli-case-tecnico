@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
+      - POSTGRES_DB=meli_case
     ports:
       - "5432:5432"
     volumes:
@@ -17,7 +17,7 @@ services:
       context: ./airflow/docker
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
     depends_on:
       - postgres

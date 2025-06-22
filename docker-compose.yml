@@ -9,8 +9,6 @@ services:
       POSTGRES_DB: meli_case
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"  
 
   airflow:
     build:

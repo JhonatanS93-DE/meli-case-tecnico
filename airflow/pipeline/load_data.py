@@ -8,7 +8,6 @@ def load_jsonl_normalized(file_path, rename_timestamp=True):
         event_df = pd.json_normalize(df['event_data'])
         df = df.drop(columns='event_data').join(event_df)
 
-    # Normaliza el nombre de la columna de fecha
     if rename_timestamp and 'day' in df.columns:
         df.rename(columns={'day': 'timestamp'}, inplace=True)
 
@@ -17,14 +16,11 @@ def load_jsonl_normalized(file_path, rename_timestamp=True):
 def load_all_sources():
     try:
         log("Cargando fuentes de datos...")
-
         prints = load_jsonl_normalized("/opt/airflow/data/input/prints.json", rename_timestamp=True)
         taps = load_jsonl_normalized("/opt/airflow/data/input/taps.json", rename_timestamp=True)
         pays = pd.read_csv("/opt/airflow/data/input/pays.csv")
-
         log("Fuentes cargadas correctamente.")
         return {"prints": prints, "taps": taps, "pays": pays}
-
     except Exception as e:
         log(f"[ERROR] Error cargando datos: {e}")
         raise

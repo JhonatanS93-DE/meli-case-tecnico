@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres:
     image: postgres:13
@@ -15,15 +17,17 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
+      AIRFLOW__WEBSERVER__SECRET_KEY: my_super_secret_key
+      AIRFLOW__WEBSERVER__AUTH_BACKEND: airflow.auth.backend.password
       AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/pipeline:/opt/airflow/pipeline
     depends_on:
       - postgres
+    command: webserver
     ports:
       - "8080:8080"
-    command: webserver
 
   scheduler:
     build:
@@ -32,6 +36,8 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
+      AIRFLOW__WEBSERVER__SECRET_KEY: my_super_secret_key
+      AIRFLOW__WEBSERVER__AUTH_BACKEND: airflow.auth.backend.password
       AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     volumes:
       - ./airflow/dags:/opt/airflow/dags

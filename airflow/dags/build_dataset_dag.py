@@ -6,9 +6,8 @@ from pipeline.transform_data import generate_features
 from pipeline.data_quality import run_quality_checks
 from pipeline.save_outputs import save_csv, save_parquet, save_to_postgres
 from pipeline.utils import log
-import sys
-
-sys.path.append('/opt/airflow')
+import pandas as pd
+import os
 
 default_args = {
     'owner': 'Jhonatan Saldarriaga',
@@ -33,38 +32,50 @@ with DAG(
         log("Iniciando extracción de datos")
         ti = kwargs['ti']
         data = load_all_sources()
-        ti.xcom_push(key='data_dict', value=data)
+        path = "/opt/airflow/tmp/data_dict.pkl"
+        pd.to_pickle(data, path)
+        ti.xcom_push(key='data_path', value=path)
+        log("Datos extraídos y guardados como pickle")
 
     def transform(**kwargs):
-        log("Iniciando transformación")
+        log("Iniciando transformación de datos")
         ti = kwargs['ti']
-        data = ti.xcom_pull(key='data_dict', task_ids='extract_data')
-        if data is None:
-            raise ValueError("No se encontraron datos en XCom desde extract_data")
+        path = ti.xcom_pull(key='data_path', task_ids='extract_data')
+        if not path or not os.path.exists(path):
+            raise FileNotFoundError(f"No se encontró el archivo de datos: {path}")
+        data = pd.read_pickle(path)
         df = generate_features(data)
-        ti.xcom_push(key='final_df', value=df)
+        output_path = "/opt/airflow/tmp/final_df.pkl"
+        pd.to_pickle(df, output_path)
+        ti.xcom_push(key='df_path', value=output_path)
+        log("Transformación finalizada")
 
     def validate(**kwargs):
-        log("Validación de calidad de datos")
+        log("🔎 Validando calidad de los datos")
         ti = kwargs['ti']
-        df = ti.xcom_pull(key='final_df', task_ids='transform_data')
-        if df is None:
-            raise ValueError("No se encontraron datos transformados en XCom")
+        path = ti.xcom_pull(key='df_path', task_ids='transform_data')
+        if not path or not os.path.exists(path):
+            raise FileNotFoundError(f"No se encontró el archivo del DataFrame transformado: {path}")
+        df = pd.read_pickle(path)
         run_quality_checks(df)
+        log("Validación finalizada")
 
     def save_outputs(**kwargs):
         log("Guardando resultados")
         ti = kwargs['ti']
-        df = ti.xcom_pull(key='final_df', task_ids='transform_data')
-        if df is None:
-            raise ValueError("No se encontraron datos transformados en XCom")
+        path = ti.xcom_pull(key='df_path', task_ids='transform_data')
+        if not path or not os.path.exists(path):
+            raise FileNotFoundError(f"No se encontró el archivo del DataFrame transformado: {path}")
+        df = pd.read_pickle(path)
         save_csv(df)
         save_parquet(df)
         save_to_postgres(df)
+        log("Resultados guardados exitosamente")
 
     def end(**kwargs):
-        log("DAG finalizado")
+        log("DAG finalizado correctamente")
 
+    # Definir tareas
     t0 = PythonOperator(task_id='start', python_callable=start)
     t1 = PythonOperator(task_id='extract_data', python_callable=extract)
     t2 = PythonOperator(task_id='transform_data', python_callable=transform)
@@ -72,4 +83,5 @@ with DAG(
     t4 = PythonOperator(task_id='save_outputs', python_callable=save_outputs)
     t5 = PythonOperator(task_id='end', python_callable=end)
 
+    # Definir flujo de ejecución
     t0 >> t1 >> t2 >> t3 >> t4 >> t5

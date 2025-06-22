@@ -2,34 +2,43 @@ services:
   postgres:
     image: postgres:13
     environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=meli_case
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: meli_case
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - pgdata:/var/lib/postgresql/data
 
   airflow:
     build:
       context: .
-      dockerfile: airflow/docker/Dockerfile
-    depends_on:
-      - postgres
+      dockerfile: ./airflow/docker/Dockerfile
     environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__WEBSERVER__PORT=8080
-      - PYTHONPATH=/opt/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/pipeline:/opt/airflow/pipeline
+    depends_on:
+      - postgres
     ports:
       - "8080:8080"
-    command: >
-      bash -c "airflow db upgrade &&
-               airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email admin@example.com &&
-               airflow webserver"
+    command: webserver
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./airflow/docker/Dockerfile
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/meli_case
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/pipeline:/opt/airflow/pipeline
+    depends_on:
+      - postgres
+    command: scheduler
 
 volumes:
-  postgres_data:
+  pgdata:

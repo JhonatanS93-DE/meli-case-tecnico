@@ -72,7 +72,13 @@ def generate_features(data):
     amounts = aggregate_events(prior_pays, "total_amount_last_3_weeks", value_column="amount")
 
     # Enriquecimiento
-    merged = filtered_prints.merge(taps, how="left", on=["user_id", "value_prop_id", "timestamp"], suffixes=("", "_tap"))
+    taps_renamed = taps.rename(columns={"timestamp": "timestamp_tap"})
+    merged = filtered_prints.merge(
+        taps_renamed,
+        how="left",
+        left_on=["user_id", "value_prop_id", "timestamp"],
+        right_on=["user_id", "value_prop_id", "timestamp_tap"]
+    )
     merged["was_clicked"] = ~merged["timestamp_tap"].isna()
 
     # Unión final

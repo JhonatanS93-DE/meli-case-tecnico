@@ -32,10 +32,13 @@ with DAG(
         log("Iniciando extracción de datos")
         ti = kwargs['ti']
         data = load_all_sources()
-        path = "/opt/airflow/tmp/data_dict.pkl"
+
+        path = '/opt/airflow/tmp/data.pkl'
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
         pd.to_pickle(data, path)
         ti.xcom_push(key='data_path', value=path)
-        log("Datos extraídos y guardados como pickle")
+        log("Extracción completada y datos guardados")
 
     def transform(**kwargs):
         log("Iniciando transformación de datos")

@@ -15,7 +15,6 @@ default_args = {
     'retries': 1
 }
 
-# Definición del DAG
 with DAG(
     dag_id='mercado_libre_pipeline_dag',
     description='Construcción de dataset enriquecido para ML desde múltiples sources',
@@ -29,32 +28,22 @@ with DAG(
     def start(**kwargs):
         print("DAG started")
 
-    # Extracción de los datos desde archivos fuente
     def extract(**kwargs):
         ti = kwargs['ti']
-        try:
-            print("Starting data extraction...")
-            data = load_all_sources()
-            print("Data extracted successfully.")
-            ti.xcom_push(key='data_dict', value=data)
-        except Exception as e:
-            print(f"Error during extraction: {e}")
-            raise e
+        data = load_all_sources()
+        ti.xcom_push(key='data_dict', value=data)
 
-    # Transformación de los datos: creación de variables para ML
     def transform(**kwargs):
         ti = kwargs['ti']
         data = ti.xcom_pull(key='data_dict', task_ids='extract_data')
         df = generate_features(data)
         ti.xcom_push(key='final_df', value=df)
 
-    # Validación de calidad de los datos
     def validate(**kwargs):
         ti = kwargs['ti']
         df = ti.xcom_pull(key='final_df', task_ids='transform_data')
         run_quality_checks(df)
 
-    # Guardado del dataset en CSV, Parquet y PostgreSQL
     def save_outputs(**kwargs):
         ti = kwargs['ti']
         df = ti.xcom_pull(key='final_df', task_ids='transform_data')

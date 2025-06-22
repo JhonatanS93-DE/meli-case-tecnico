@@ -8,6 +8,12 @@ def generate_features(data):
     taps = data["taps"]
     pays = data["pays"]
 
+    # Validar columnas esperadas
+    for name, df in {"prints": prints, "taps": taps, "pays": pays}.items():
+        if "timestamp" not in df.columns:
+            log(f"[ERROR] El DataFrame '{name}' no contiene la columna 'timestamp'. Columnas disponibles: {df.columns.tolist()}")
+            raise ValueError(f"El DataFrame '{name}' no contiene la columna 'timestamp'.")
+
     # Fase 1: Conversión de fechas
     prints["timestamp"] = pd.to_datetime(prints["timestamp"])
     taps["timestamp"] = pd.to_datetime(taps["timestamp"])

@@ -25,6 +25,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/pipeline:/opt/airflow/pipeline
+      - ./data:/opt/airflow/data
     depends_on:
       - postgres
     command: webserver
@@ -44,6 +45,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/pipeline:/opt/airflow/pipeline
+      - ./data:/opt/airflow/data
     depends_on:
       - postgres
     command: scheduler

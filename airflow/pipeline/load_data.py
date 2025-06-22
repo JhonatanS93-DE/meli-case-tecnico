@@ -18,9 +18,9 @@ def load_all_sources():
     try:
         log("Cargando fuentes de datos...")
 
-        prints = load_jsonl_normalized("data/input/prints.json", rename_timestamp=True)
-        taps = load_jsonl_normalized("data/input/taps.json", rename_timestamp=False)
-        pays = pd.read_csv("data/input/pays.csv")
+        prints = load_jsonl_normalized("/opt/airflow/data/input/prints.json", rename_timestamp=True)
+        taps = load_jsonl_normalized("/opt/airflow/data/input/taps.json", rename_timestamp=True)
+        pays = pd.read_csv("/opt/airflow/data/input/pays.csv")
 
         log("Fuentes cargadas correctamente.")
         return {"prints": prints, "taps": taps, "pays": pays}

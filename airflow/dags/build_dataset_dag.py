@@ -27,13 +27,19 @@ with DAG(
 ) as dag:
 
     def start(**kwargs):
-        print("✅ DAG started")
+        print("DAG started")
 
     # Extracción de los datos desde archivos fuente
     def extract(**kwargs):
         ti = kwargs['ti']
-        data = load_all_sources()
-        ti.xcom_push(key='data_dict', value=data)
+        try:
+            print("Starting data extraction...")
+            data = load_all_sources()
+            print("Data extracted successfully.")
+            ti.xcom_push(key='data_dict', value=data)
+        except Exception as e:
+            print(f"Error during extraction: {e}")
+            raise e
 
     # Transformación de los datos: creación de variables para ML
     def transform(**kwargs):
@@ -57,7 +63,7 @@ with DAG(
         save_to_postgres(df)
 
     def end(**kwargs):
-        print("✅ DAG finished")
+        print("DAG finished")
 
     t0 = PythonOperator(task_id='start', python_callable=start)
     t1 = PythonOperator(task_id='extract_data', python_callable=extract)

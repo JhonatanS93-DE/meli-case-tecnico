@@ -28,7 +28,7 @@ Este proyecto corresponde a la resolución de un ejercicio técnico para la posi
 - **Python 3.10+**
 - **Apache Airflow** (vía Docker Compose)
 - **PostgreSQL** (DBeaver como cliente de consulta en BD)
-- **Pandas / PyArrow**
+- **Pandas**
 - **Docker + Docker Compose**
 
 ---

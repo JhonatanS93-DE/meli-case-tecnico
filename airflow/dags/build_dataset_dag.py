@@ -54,7 +54,7 @@ with DAG(
         log("Transformación finalizada")
 
     def validate(**kwargs):
-        log("🔎 Validando calidad de los datos")
+        log("Validando calidad de los datos")
         ti = kwargs['ti']
         path = ti.xcom_pull(key='df_path', task_ids='transform_data')
         if not path or not os.path.exists(path):

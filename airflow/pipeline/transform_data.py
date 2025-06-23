@@ -69,7 +69,7 @@ def generate_features(data):
     views = aggregate_events(prior_prints, "views_last_3_weeks")
     clicks = aggregate_events(prior_taps, "clicks_count")
     payments = aggregate_events(prior_pays, "payments_last_3_weeks")
-    amounts = aggregate_events(prior_pays, "total_amount_last_3_weeks", value_column="amount")
+    amounts = aggregate_events(prior_pays, "total_amount_last_3_weeks", value_column="total")
 
     # Enriquecimiento
     taps_renamed = taps.rename(columns={"timestamp": "timestamp_tap"})
@@ -89,5 +89,6 @@ def generate_features(data):
         .merge(amounts, how="left", on=["user_id", "value_prop_id"])
 
     enriched.fillna(0, inplace=True)
+    enriched.drop(columns=["position_x", "position_y"], errors="ignore", inplace=True)
     log("Dataset enriquecido generado exitosamente.")
     return enriched

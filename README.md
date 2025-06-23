@@ -27,7 +27,7 @@ Este proyecto corresponde a la resolución de un ejercicio técnico para la posi
 
 - **Python 3.10+**
 - **Apache Airflow** (vía Docker Compose)
-- **PostgreSQL** (DBeaver como cliente de consulta)
+- **PostgreSQL** (DBeaver como cliente de consulta en BD)
 - **Pandas / PyArrow**
 - **Docker + Docker Compose**
 
@@ -64,16 +64,45 @@ cd meli-case-tecnico
 
 3. Ejecuta el entorno:
 ```bash
-docker-compose up --build
+docker-compose build
+docker-compose run airflow airflow db init
+docker-compose up
 ```
 
 4. Accede a Airflow:
 ```
 http://localhost:8080
 (user: admin / password: admin)
+
+Si tienes inconvenientes al ingresar por usuario y pass, puedes correr este codigo en bash para asignarlas:
+
+docker-compose exec airflow airflow users create \
+  --username admin \
+  --firstname Admin \
+  --lastname User \
+  --role Admin \
+  --email admin@example.com \
+  --password admin
+
 ```
 
 5. Sube tus archivos fuente a `data/input/` y ejecuta el DAG `mercado_libre_pipeline_dag`.
+Los resultados se alojaran en la carpeta `data/output`
+
+1-Archivos csv
+2-Archivo parquet
+3-Base de datos
+
+---
+
+## Analisis Exploratorio
+
+Se realiza analisis exploratorio para explicar en un notebook de `Jupyter Notebook`
+con el mismo comando Jupyter Notebook.
+El cual puedes ejecutar desde tu terminal y automaticamente se abre la conexion en 
+http://localhost:8888
+
+Nota: Para poder ejecutarlo primero debes tener el resultado del dataset_final y acomodar la ruta del archivo.
 
 ---
 
@@ -81,7 +110,7 @@ http://localhost:8080
 
 - Tests automatizados con `pytest`.
 - Validaciones de esquema con `Great Expectations`.
-- Aplicar uso de servicios cloud
+- Aplicar uso de servicios cloud 
 
 ---
 
